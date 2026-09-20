@@ -968,14 +968,14 @@ export default function App({ preview = false }: { preview?: boolean }) {
               )}
               <div className="billing-grid">
                 {(["month", "year"] as const).map((interval) => (
-                  <div className="card plan" key={interval}>
+                  <div className={`card plan${interval === "year" ? " plan-annual" : ""}`} key={interval}>
+                    {interval === "year" && <div className="plan-savings-header"><Sparkles size={18} aria-hidden="true" /><strong>Save 17%</strong><span>with annual billing</span></div>}
                     {selectedPlan === interval && (
                       <p className="eyebrow">Your selected plan</p>
                     )}
                     <span className="tag">
                       {interval === "month" ? "Monthly" : "Annual"}
                     </span>
-                    {interval === "year" && <span className="annual-savings-badge">Save 17%</span>}
                     <div className="price">
                       CAD {interval === "month" ? "$49.99" : "$499.99"}
                       <span> / {interval}</span>

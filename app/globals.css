@@ -172,15 +172,27 @@ button {
   color: var(--muted);
   margin: 0;
 }
-.annual-savings-badge {
-  display: inline-flex;
-  margin-left: 12px;
-  padding: 6px 12px;
-  border-radius: 999px;
-  background: var(--teal-dark);
+.plan-savings-header {
+  position: absolute;
+  inset: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  min-height: 56px;
+  padding: 14px 18px;
+  background: #126b61;
   color: #fff;
-  font-size: 13px;
-  font-weight: 700;
+  border-bottom: 1px solid #0f5e55;
+}
+.plan-savings-header strong { font-size: 19px; font-weight: 700; }
+.plan-savings-header span { font-size: 13px; color: #e1f4ee; }
+.card.plan.plan-annual {
+  position: relative;
+  overflow: hidden;
+  padding-top: 84px;
+  border-color: #78afa4;
 }
 .row {
   display: flex;
@@ -1355,3 +1367,4 @@ body {
     object-position: left;
   }
 }
+

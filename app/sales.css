@@ -552,35 +552,13 @@
   padding: 31px;
   position: relative;
 }
-.sales-plan-featured {
+.sales-plan-card.sales-plan-featured {
+  overflow: hidden;
+  padding-top: 86px;
   background: #e3eee6;
   border-color: #83b2a2;
 }
-.sales-plan-ribbon {
-  background: #1e7068;
-  border-radius: 0 5px 0 5px;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  padding: 7px 12px;
-  position: absolute;
-  right: 0;
-  text-transform: uppercase;
-  top: 0;
-}
-.sales-plan-saving-badge {
-  background: #f4e5bd;
-  border: 1px solid #e3c985;
-  border-radius: 999px;
-  color: #785622;
-  display: inline-flex;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  margin: -3px 0 13px;
-  padding: 7px 12px;
-}
+
 .sales-plan-label {
   color: #a8743e;
   font-size: 11px;
@@ -953,3 +931,4 @@
   margin: 49px 0 29px;
   padding-bottom: 16px;
 }
+
