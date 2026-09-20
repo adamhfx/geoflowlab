@@ -929,8 +929,8 @@ body {
 .top {
   height: 82px;
   padding: 0 48px;
-  background: rgba(255, 255, 255, 0.72);
-  border-bottom-color: #e2ebe7;
+  background: var(--paper);
+  border-bottom: 0;
 }
 
 .crumb {
