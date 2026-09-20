@@ -55,7 +55,7 @@ type Workspace = {
   calculations: Calculation[];
   calculators: CatalogItem[];
 };
-type View = "overview" | "catalog" | "editor" | "results" | "billing" | "models" | "settings";
+type View = "overview" | "saved" | "catalog" | "editor" | "results" | "billing" | "models" | "settings";
 const usd = (v: number) =>
   new Intl.NumberFormat("en-CA", {
     style: "currency",
@@ -539,6 +539,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
           {(
             [
               { id: "overview", label: "Overview", icon: Gauge },
+              { id: "saved", label: "Saved Calculations", icon: FolderOpen },
               { id: "catalog", label: "Calculators", icon: FlaskConical },
               { id: "billing", label: "Subscription", icon: Sparkles },
             ] as const
@@ -589,7 +590,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
                     ? "Calculators"
                     : view === "billing"
                       ? "Subscription"
-                      : view === "settings" ? "Settings" : view === "models" ? "Calculator workbooks"
+                      : view === "saved" ? "Saved Calculations" : view === "settings" ? "Settings" : view === "models" ? "Calculator workbooks"
                       : "Overview"}
             </strong>
           </div>
@@ -629,14 +630,14 @@ export default function App({ preview = false }: { preview?: boolean }) {
               </span>
             </div>
           )}
-          {view === "overview" && (
+          {(view === "overview" || view === "saved") && (
             <>
-              <div className="eyebrow">Economics, with clarity</div>
-              <h1 className="title">Your calculations</h1>
+              <div className="eyebrow">{view === "saved" ? "Your project library" : "Economics, with clarity"}</div>
+              <h1 className="title">{view === "saved" ? "Saved Calculations" : "Your calculations"}</h1>
               <p className="subtitle">
-                Build a scenario. Compare the results. Keep every run.
+                {view === "saved" ? "Reopen a saved calculation to review inputs, make changes, or view earlier results." : "Build a scenario. Compare the results. Keep every run."}
               </p>
-              <div className="metrics">
+              {view === "overview" && <div className="metrics">
                 <Metric
                   label="Saved calculations"
                   value={String(workspace?.calculations.length || 0)}
@@ -655,7 +656,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
                         : "View and download"
                   }
                 />
-              </div>
+              </div>}
               <div className="section-head">
                 <h2>Saved projects</h2>
               </div>
@@ -758,7 +759,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
               <div className="row wrap">
                 <button
                   className="btn ghost"
-                  onClick={() => setView("overview")}
+                  onClick={() => setView("saved")}
                 >
                   <ArrowLeft size={16} />
                   Calculations

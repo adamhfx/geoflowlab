@@ -9,6 +9,8 @@ test("canonical routes round trip", () => {
   const routes: AppRoute[] = [
     { view: "sales", preview: false },
     { view: "overview", preview: false },
+    { view: "saved", preview: false },
+    { view: "saved", preview: true },
     { view: "catalog", preview: true },
     { view: "billing", preview: false },
     { view: "models", preview: false },

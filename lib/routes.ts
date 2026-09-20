@@ -1,5 +1,5 @@
 export type AppRoute = {
-  view: "overview" | "catalog" | "editor" | "results" | "billing" | "models" | "settings" | "sales" | "signin";
+  view: "overview" | "saved" | "catalog" | "editor" | "results" | "billing" | "models" | "settings" | "sales" | "signin";
   preview: boolean;
   calculationId?: string;
   runId?: string;
@@ -57,6 +57,7 @@ export function parseAppRoute(pathname: string, search = ""): AppRoute | null {
   if (parts.length === 0) return section || calculator || mode ? null : { view: "sales", preview: false };
   if (parts.length === 1 && parts[0] === "workspace") return preview || section || calculator || mode ? null : { view: "overview", preview: false };
   if (parts.length === 1 && parts[0] === "calculators") return section || calculator || mode ? null : { view: "catalog", preview };
+  if (parts.length === 1 && parts[0] === "calculations") return section || calculator || mode ? null : { view: "saved", preview };
   if (parts.length === 1 && parts[0] === "subscription") return section || calculator || mode ? null : { view: "billing", preview };
   if (parts.length === 1 && parts[0] === "settings") return section || calculator || mode ? null : { view: "settings", preview };
   if (parts.length === 2 && parts[0] === "settings" && parts[1] === "workbooks") return section || calculator || mode ? null : { view: "models", preview };
@@ -83,6 +84,7 @@ export function routeHref(route: AppRoute): string {
     case "sales": if (route.preview) throw new Error("Sales route has no preview path."); path = "/"; break;
     case "overview": path = route.preview ? "" : "/workspace"; break;
     case "catalog": path = "/calculators"; break;
+    case "saved": path = "/calculations"; break;
     case "billing": path = "/subscription"; break;
     case "settings": path = "/settings"; break;
     case "models": path = "/settings/workbooks"; break;
