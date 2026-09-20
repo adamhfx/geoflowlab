@@ -80,6 +80,7 @@
   display: flex;
   gap: 28px;
 }
+.sales-nav-workspace { border: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; }
 .sales-nav-links a,
 .sales-nav-action,
 .sales-nav-mobile-action {

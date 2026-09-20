@@ -99,7 +99,7 @@ export default function SalesPage({
           <a href="#plans">Plans</a>
           <a href="#faq">FAQ</a>
           <button
-            className="sales-nav-mobile-action"
+            className={signedIn ? "sales-nav-workspace" : "sales-nav-mobile-action"}
             onClick={() => {
               navAction();
               setMenuOpen(false);

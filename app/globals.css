@@ -956,7 +956,7 @@ body {
 }
 
 .account-settings {
-  max-width: 520px;
+  max-width: min(520px, calc(100vw - 32px));
   border: 1px solid var(--line);
   color: var(--ink);
   margin: auto;
