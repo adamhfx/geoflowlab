@@ -462,6 +462,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
               key={id}
               aria-label={label}
               className={view === id ? "active" : ""}
+              aria-current={view === id ? "page" : undefined}
               onClick={() => setView(id)}
             >
               <Icon size={18} />

@@ -877,6 +877,41 @@ body {
   color: #ffffff;
 }
 
+/* Join the selected page to the workspace with inward curved corners. */
+.side { --sidebar-gutter: 18px; border-right: 0; }
+.side .nav { margin-right: calc(-1 * var(--sidebar-gutter)); }
+.side .nav button { position: relative; border-radius: 18px 0 0 18px; }
+.side .nav button.active {
+  background: var(--paper);
+  box-shadow: none;
+  z-index: 1;
+}
+.side .nav button.active::before,
+.side .nav button.active::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+.side .nav button.active::before {
+  bottom: 100%;
+  background: radial-gradient(circle at 0 0, transparent 23.5px, var(--paper) 24px);
+}
+.side .nav button.active::after {
+  top: 100%;
+  background: radial-gradient(circle at 0 100%, transparent 23.5px, var(--paper) 24px);
+}
+@media (max-width: 850px) { .side { --sidebar-gutter: 10px; } }
+@media (max-width: 600px) {
+  .side { --sidebar-gutter: 6px; }
+  .side .nav button.active::before,
+  .side .nav button.active::after { width: 16px; height: 16px; }
+  .side .nav button.active::before { background: radial-gradient(circle at 0 0, transparent 15.5px, var(--paper) 16px); }
+  .side .nav button.active::after { background: radial-gradient(circle at 0 100%, transparent 15.5px, var(--paper) 16px); }
+}
+
 .side-foot {
   border-top-color: #d7e4de;
   padding-top: 17px;
