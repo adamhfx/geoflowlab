@@ -362,7 +362,7 @@ button {
 }
 .form-layout {
   display: grid;
-  grid-template-columns: 220px minmax(0, 1fr);
+  grid-template-columns: max-content minmax(0, 1fr);
   gap: 23px;
   margin-top: 28px;
 }
@@ -373,6 +373,7 @@ button {
 }
 .group-nav button {
   display: block;
+  white-space: nowrap;
   width: 100%;
   text-align: left;
   border: 0;

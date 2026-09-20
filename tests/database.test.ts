@@ -18,12 +18,19 @@ test("database enforces ownership, subscriptions, immutable history and idempote
     await db.exec(
       await readFile("supabase/migrations/002_checkout.sql", "utf8"),
     );
+    await db.exec(await readFile("supabase/migrations/003_model_administration.sql", "utf8"));
     const alice = "00000000-0000-4000-8000-000000000001",
       bob = "00000000-0000-4000-8000-000000000002";
     const calc = "00000000-0000-4000-8000-000000000003",
       calc2 = "00000000-0000-4000-8000-000000000004";
     const key = "00000000-0000-4000-8000-000000000005";
     await db.query("insert into auth.users values($1),($2)", [alice, bob]);
+    await db.query("insert into app_administrators(user_id) values($1)", [alice]);
+    await db.exec("set role authenticated");
+    await assert.rejects(db.query("select * from app_administrators"), /permission denied/);
+    await assert.rejects(db.query("select * from model_uploads"), /permission denied/);
+    await assert.rejects(db.query("insert into app_administrators(user_id) values($1)", [bob]), /permission denied/);
+    await db.exec("reset role");
     await db.exec(`insert into calculators(id,name,description,current_version) values('test','Test','Test','v1');
  insert into calculator_versions values('test','v1','{}','private/test.xlsx','hash',false,null,now());`);
     await assert.rejects(

@@ -30,6 +30,8 @@ import type {
 } from "@/lib/types";
 import { previewManifest } from "./preview/manifest";
 import SalesPage from "./SalesPage";
+import AdminModels from "./AdminModels";
+import { changeInput, inputOptions, isFluidUnit, optionLabel } from "@/lib/input-options";
 type CatalogItem = {
   id: string;
   name: string;
@@ -37,7 +39,7 @@ type CatalogItem = {
   current_version: string;
 };
 type Workspace = {
-  user: { email: string; name?: string | null; avatarUrl?: string | null };
+  user: { email: string; name?: string | null; avatarUrl?: string | null; isAdmin?: boolean };
   canWrite: boolean;
   billingEnabled: boolean;
   subscription: {
@@ -49,7 +51,7 @@ type Workspace = {
   calculations: Calculation[];
   calculators: CatalogItem[];
 };
-type View = "overview" | "catalog" | "editor" | "results" | "billing";
+type View = "overview" | "catalog" | "editor" | "results" | "billing" | "models";
 const usd = (v: number) =>
   new Intl.NumberFormat("en-CA", {
     style: "currency",
@@ -275,7 +277,9 @@ export default function App({ preview = false }: { preview?: boolean }) {
     });
   }
   function updateInput(id: string, value: string | number | null) {
-    setInputs((old) => ({ ...old, [id]: value }));
+    setInputs((old) => changeInput(manifest, old, id, value));
+    if (manifest?.id === "state-rent" && id === "C5" && inputs.C5 !== value)
+      setNotice("Choose units for the selected fluid and review the volume and flow rate amounts. Numeric values have not been converted.");
     setDirty(true);
   }
   async function saveDraft() {
@@ -388,6 +392,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
       <AccountControls
         user={workspace.user}
         busy={busy}
+        onModels={() => { setEntry("workspace"); setView("models"); }}
         onSubscription={() => {
           setEntry("workspace");
           setView("billing");
@@ -515,6 +520,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
                     ? "Calculators"
                     : view === "billing"
                       ? "Subscription"
+                      : view === "models" ? "Calculator workbooks"
                       : "Overview"}
             </strong>
           </div>
@@ -726,7 +732,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
                 </div>
               </div>
               <div className="eyebrow" style={{ marginTop: 28 }}>
-                {manifest.name} · {manifest.version}
+                {manifest.name}
               </div>
               <label className="form-label" htmlFor="calculation-name">
                 Calculation name{dirty ? " · Unsaved changes" : ""}
@@ -780,6 +786,8 @@ export default function App({ preview = false }: { preview?: boolean }) {
                           <Input
                             key={f.id}
                             field={f}
+                            options={inputOptions(manifest, f, inputs)}
+                            help={isFluidUnit(manifest, f) && !inputs.C5 ? "Choose a primary reservoir fluid first." : undefined}
                             value={inputs[f.id]}
                             setValue={(v) => updateInput(f.id, v)}
                             disabled={!editable}
@@ -939,6 +947,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
               </p>
             </>
           )}
+          {view === "models" && workspace?.user.isAdmin && <AdminModels onBack={() => setView("overview")} />}
         </div>
       </main>
       {modal && (
@@ -1005,11 +1014,13 @@ function AccountControls({
   user,
   busy,
   onSubscription,
+  onModels,
   onSignOut,
 }: {
   user: Workspace["user"];
   busy: boolean;
   onSubscription: () => void;
+  onModels: () => void;
   onSignOut: () => void;
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -1081,6 +1092,7 @@ function AccountControls({
           calculations are private to this account.
         </p>
         <div className="modal-actions">
+          {user.isAdmin && <button className="btn" onClick={() => { dialog.current?.close(); onModels(); }}>Manage calculator workbooks</button>}
           <button
             className="btn primary"
             onClick={() => {
@@ -1243,12 +1255,16 @@ function Input({
   setValue,
   disabled,
   compact = false,
+  options,
+  help,
 }: {
   field: Field;
   value: string | number | null | undefined;
   setValue: (v: string | number | null) => void;
   disabled: boolean;
   compact?: boolean;
+  options?: string[];
+  help?: string;
 }) {
   return (
     <div className="field">
@@ -1268,9 +1284,10 @@ function Input({
           onChange={(e) => setValue(e.target.value)}
         >
           <option value="">{f.type === "milestone" ? "—" : "Select…"}</option>
-          {(f.type === "milestone" ? ["X"] : f.options || []).map((o) => (
+          {f.type === "select" && value && !(options ?? f.options ?? []).includes(String(value)) && <option value={value} disabled>{optionLabel(String(value))} — select a matching unit</option>}
+          {(f.type === "milestone" ? ["X"] : options ?? f.options ?? []).map((o) => (
             <option key={o} value={o}>
-              {o === "X" ? "Completed" : o}
+              {optionLabel(o)}
             </option>
           ))}
         </select>
@@ -1296,6 +1313,7 @@ function Input({
           }
         />
       )}
+      {help && <p className="small">{help}</p>}
     </div>
   );
 }

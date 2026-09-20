@@ -1,6 +1,7 @@
 import { actor, failure, ok } from "../_route";
 import { DISPLAY_PRICES, billingEnabled } from "@/lib/billing";
 import { paidAccess } from "@/lib/validation";
+import { isAdministrator } from "@/lib/admin";
 export async function GET(request: Request) {
   try {
     const { user, db } = await actor(request);
@@ -26,6 +27,7 @@ export async function GET(request: Request) {
       user: {
         id: user.id,
         email: user.email,
+        isAdmin: await isAdministrator(db, user),
         name:
           typeof user.user_metadata?.full_name === "string"
             ? user.user_metadata.full_name

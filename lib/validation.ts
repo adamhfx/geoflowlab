@@ -1,4 +1,5 @@
 import type { InputValues, Manifest } from "./types";
+import { inputOptions, isFluidUnit } from "./input-options";
 export function validateInputs(
   values: InputValues,
   manifest: Manifest,
@@ -10,6 +11,8 @@ export function validateInputs(
     errors.push("Unknown input field.");
   for (const f of manifest.fields) {
     const v = values[f.id];
+    if (complete && isFluidUnit(manifest, f) && v && !inputOptions(manifest, f, values).includes(String(v)))
+      errors.push(`${f.label} must match the primary reservoir fluid.`);
     if (v === null || v === undefined || v === "") {
       if (complete && f.required) errors.push(`${f.label} is required.`);
       continue;
