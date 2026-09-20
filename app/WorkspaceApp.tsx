@@ -4,6 +4,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { parsePageRoute, routeHref, type AppRoute } from "@/lib/routes";
 import { safeReturnPath } from "@/lib/auth-helpers";
 import AccountSettings from "./AccountSettings";
+import LoadingSpinner from "./LoadingSpinner";
 import {
   ArrowLeft,
   ArrowRight,
@@ -110,8 +111,10 @@ export default function App({ preview = false }: { preview?: boolean }) {
   const currentRoute = parsePageRoute(pathname, search);
   function navigate(route: AppRoute, replace = false) {
     const href = routeHref(route);
-    const options = { scroll: !(route.view === "editor" && view === "editor") };
-    replace ? router.replace(href, options) : router.push(href, options);
+    // Native history updates Next's location hooks without remounting the shell.
+    if (replace) window.history.replaceState(null, "", href);
+    else window.history.pushState(null, "", href);
+    if (!(route.view === "editor" && view === "editor")) window.scrollTo({ top: 0, behavior: "instant" });
   }
   function setView(next: View) {
     navigate({ view: next, preview,
@@ -480,13 +483,8 @@ export default function App({ preview = false }: { preview?: boolean }) {
         onSignOut={signOut}
       />
     ) : null;
-  if (loading || routeLoading)
-    return (
-      <div className="empty">
-        <Brand />
-        <p>Opening GeoFlow Lab…</p>
-      </div>
-    );
+  if (loading || (routeLoading && !workspace && !preview))
+    return <LoadingSpinner fullPage />;
   if (routeError) return <div className="empty"><Brand /><h1>Unable to open this page</h1><p>{routeError}</p><a className="btn primary" href={preview ? "/preview" : "/workspace"}>Back to workspace</a></div>;
   if (!preview && !workspace && entry !== "sales")
     return (
@@ -611,6 +609,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
           </div>
         </header>
         <div className="content">
+          {routeLoading ? <LoadingSpinner /> : <>
           {error && (
             <div role="alert" className="notice">
               {error}
@@ -1021,6 +1020,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
           )}
           {view === "settings" && workspace && <AccountSettings user={workspace.user} busy={busy} onModels={() => setView("models")} onSubscription={() => setView("billing")} onSignOut={signOut} />}
           {view === "models" && workspace?.user.isAdmin && <AdminModels onBack={() => setView("overview")} />}
+          </>}
         </div>
       </main>
       {modal && (

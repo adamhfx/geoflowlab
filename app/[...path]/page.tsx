@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import LoadingSpinner from "../LoadingSpinner";
 import { notFound } from "next/navigation";
 import App from "../WorkspaceApp";
 import { parsePageRoute } from "@/lib/routes";
@@ -16,5 +17,6 @@ export default async function WorkspacePage({ params, searchParams }: {
   }
   const route = parsePageRoute("/" + path.join("/"), query.toString());
   if (!route) notFound();
-  return <Suspense fallback={<p>Opening GeoFlow Lab…</p>}><App preview={route.preview} /></Suspense>;
+  return <Suspense fallback={<LoadingSpinner fullPage />}><App preview={route.preview} /></Suspense>;
 }
+
