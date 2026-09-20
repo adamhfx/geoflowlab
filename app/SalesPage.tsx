@@ -92,7 +92,7 @@ export default function SalesPage({
     <main className="sales-page">
       <div className="sales-grain" aria-hidden="true" />
       <nav className="sales-nav" aria-label="Primary navigation">
-        <a className="sales-brand" href="#top" aria-label="GeoFlow Lab home">
+        <a className="sales-brand" href={signedIn ? "/workspace" : "#top"} aria-label={signedIn ? "GeoFlow Lab overview" : "GeoFlow Lab home"}>
           <img src="/geoflow-lab-logo.png" alt="GeoFlow Lab" />
         </a>
         <div
@@ -443,7 +443,7 @@ export default function SalesPage({
         </div>
       )}
       <footer className="sales-footer">
-        <img src="/geoflow-lab-logo.png" alt="GeoFlow Lab" />
+        <a href={signedIn ? "/workspace" : "#top"} aria-label={signedIn ? "GeoFlow Lab overview" : "GeoFlow Lab home"}><img src="/geoflow-lab-logo.png" alt="GeoFlow Lab" /></a>
         <span>Private tools for considered decisions.</span>
         <span>© GeoFlow Lab</span>
       </footer>

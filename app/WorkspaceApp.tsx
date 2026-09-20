@@ -69,9 +69,15 @@ const when = (v: string) =>
     dateStyle: "medium",
     timeStyle: "short",
   });
-function Brand() {
+function Brand({ href = "/", onNavigate }: { href?: string; onNavigate?: () => void }) {
   return (
     <div className="brand">
+      <a className="brand-link" href={href} aria-label={href === "/" ? "GeoFlow Lab home" : "GeoFlow Lab overview"} onClick={(event) => {
+        if (onNavigate && !event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {
+          event.preventDefault();
+          onNavigate();
+        }
+      }}>
       <img
         className="logo-full"
         src="/geoflow-lab-logo.png"
@@ -86,6 +92,7 @@ function Brand() {
         width="343"
         height="343"
       />
+      </a>
     </div>
   );
 }
@@ -532,7 +539,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
   return (
     <div className="app">
       <aside className="side">
-        <Brand />
+        <Brand href={preview ? "/preview" : "/workspace"} onNavigate={() => setView("overview")} />
         <nav className="nav" aria-label="Main navigation">
           {(
             [

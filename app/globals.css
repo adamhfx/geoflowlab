@@ -76,6 +76,15 @@ button {
   font-size: 18px;
   letter-spacing: -0.3px;
 }
+.brand-link {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+}
+.brand-link:focus-visible {
+  outline: 2px solid var(--teal);
+  outline-offset: 5px;
+}
 .mark {
   width: 29px;
   height: 29px;
