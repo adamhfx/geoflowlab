@@ -569,6 +569,18 @@
   text-transform: uppercase;
   top: 0;
 }
+.sales-plan-saving-badge {
+  background: #f4e5bd;
+  border: 1px solid #e3c985;
+  border-radius: 999px;
+  color: #785622;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  margin: -3px 0 13px;
+  padding: 7px 12px;
+}
 .sales-plan-label {
   color: #a8743e;
   font-size: 11px;

@@ -345,6 +345,7 @@ export default function SalesPage({
           </article>
           <article className="sales-plan-card sales-plan-featured">
             <div className="sales-plan-ribbon">Best value</div>
+            <div className="sales-plan-saving-badge" aria-label="Save 17 percent compared with monthly">Save 17%</div>
             <p className="sales-plan-label">Yearly</p>
             <h3>
               <span>CAD</span>$499.99 <small>/ year</small>

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { userClient } from "@/lib/supabase";
 import { safeReturnPath } from "@/lib/auth-helpers";
+import { cookies } from "next/headers";
 export async function GET(request: Request) {
   const u = new URL(request.url),
     origin = process.env.APP_URL || u.origin;
@@ -22,9 +23,12 @@ export async function GET(request: Request) {
       });
       if (error) return failed();
     }
-    return NextResponse.redirect(
-      new URL(safeReturnPath(u.searchParams.get("next")), origin),
-    );
+    const returnPath = u.searchParams.get("next") || (await cookies()).get("geoflow-return-path")?.value || null;
+    let decoded = returnPath;
+    try { if (!u.searchParams.has("next") && returnPath) decoded = decodeURIComponent(returnPath); } catch { decoded = null; }
+    const response = NextResponse.redirect(new URL(safeReturnPath(decoded), origin));
+    response.cookies.delete("geoflow-return-path");
+    return response;
   } catch {
     return failed();
   }

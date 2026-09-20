@@ -147,6 +147,16 @@ button {
   color: var(--muted);
   margin: 0;
 }
+.annual-savings-badge {
+  display: inline-flex;
+  margin-left: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--teal-dark);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
 .row {
   display: flex;
   align-items: center;

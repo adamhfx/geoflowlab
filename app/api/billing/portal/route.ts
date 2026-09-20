@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     if (c.deleted) throw new ApiError(404, "Billing account not found.");
     const s = await stripeClient().billingPortal.sessions.create({
       customer: sub.stripe_customer_id,
-      return_url: `${process.env.APP_URL}/billing`,
+      return_url: `${process.env.APP_URL}/subscription`,
     });
     return ok({ url: s.url });
   } catch (e) {
