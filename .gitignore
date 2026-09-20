@@ -1,0 +1,19 @@
+node_modules/
+.next/
+.env*
+!.env.example
+*.tsbuildinfo
+__pycache__/
+.pytest_cache/
+.venv/
+private/
+*.xlsx
+*.log
+test-results/
+# Owner-only model preparation and numerical review material.
+models/
+worker/prepare_model.py
+docs/MODEL_REVIEW.md
+docs/ENGINE_VALIDATION.json
+docs/CALCULATION_PROOF.json
+review/
