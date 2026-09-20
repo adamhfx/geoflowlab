@@ -796,8 +796,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
                     </div>
                   )}
                   <p className="small" style={{ marginTop: 24 }}>
-                    {manifest.fields.length} mapped inputs across{" "}
-                    {manifest.groups.length} sections. Project amounts use USD.
+                    Project amounts use USD.
                   </p>
                 </section>
               </div>
