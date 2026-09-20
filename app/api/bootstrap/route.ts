@@ -23,7 +23,19 @@ export async function GET(request: Request) {
       ]);
     const subscription = sub ?? null;
     return ok({
-      user: { id: user.id, email: user.email },
+      user: {
+        id: user.id,
+        email: user.email,
+        name:
+          typeof user.user_metadata?.full_name === "string"
+            ? user.user_metadata.full_name
+            : null,
+        avatarUrl:
+          typeof user.user_metadata?.avatar_url === "string" &&
+          /^https:\/\//.test(user.user_metadata.avatar_url)
+            ? user.user_metadata.avatar_url
+            : null,
+      },
       subscription,
       canWrite: paidAccess(subscription),
       calculators: calculators ?? [],

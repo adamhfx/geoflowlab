@@ -3,7 +3,8 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "GeoFlow Lab",
-  description: "Scientific economics workbench",
+  description:
+    "Explore project economics with GeoFlow Lab. Compare subscription plans for private saved scenarios, calculation history, and editable Excel results.",
   icons: {
     icon: [{ url: "/geoflow-lab-icon.svg", type: "image/svg+xml" }],
     shortcut: "/geoflow-lab-icon.svg",

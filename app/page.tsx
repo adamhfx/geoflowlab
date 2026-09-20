@@ -13,6 +13,7 @@ import {
   Plus,
   Save,
   ShieldCheck,
+  Settings,
   Sparkles,
   X,
   Zap,
@@ -28,6 +29,7 @@ import type {
   Result,
 } from "@/lib/types";
 import { previewManifest } from "./preview/manifest";
+import SalesPage from "./SalesPage";
 type CatalogItem = {
   id: string;
   name: string;
@@ -35,13 +37,14 @@ type CatalogItem = {
   current_version: string;
 };
 type Workspace = {
-  user: { email: string };
+  user: { email: string; name?: string | null; avatarUrl?: string | null };
   canWrite: boolean;
   billingEnabled: boolean;
   subscription: {
     status: string;
     paid_until: string | null;
     cancel_at_period_end: boolean;
+    interval?: string | null;
   } | null;
   calculations: Calculation[];
   calculators: CatalogItem[];
@@ -81,6 +84,30 @@ function Brand() {
 }
 
 export default function App({ preview = false }: { preview?: boolean }) {
+  const [entry, setEntry] = useState<"sales" | "signin" | "workspace">("sales");
+  const [selectedPlan, setSelectedPlan] = useState<"month" | "year" | null>(
+    null,
+  );
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [entry]);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    let plan = params.get("plan");
+    try {
+      plan ||= sessionStorage.getItem("geoflow-selected-plan");
+      sessionStorage.removeItem("geoflow-selected-plan");
+    } catch {
+      /* Storage may be unavailable in private browser modes. */
+    }
+    if (plan === "month" || plan === "year") {
+      setSelectedPlan(plan);
+      setView("billing");
+      setEntry("workspace");
+    } else if (params.has("signin") || params.has("error")) {
+      setEntry("signin");
+    }
+  }, []);
   const [workspace, setWorkspace] = useState<Workspace | null>(null),
     [loading, setLoading] = useState(!preview),
     [view, setView] = useState<View>("overview");
@@ -135,6 +162,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
       if (event === "SIGNED_OUT") {
         setWorkspace(null);
         setView("overview");
+        setEntry("sales");
       }
       if (event === "SIGNED_IN" || event === "TOKEN_REFRESHED")
         setTimeout(() => void refresh(), 0);
@@ -349,14 +377,75 @@ export default function App({ preview = false }: { preview?: boolean }) {
       window.location.assign(url);
     });
   }
+  const accountControls =
+    workspace && !preview ? (
+      <AccountControls
+        user={workspace.user}
+        busy={busy}
+        onSubscription={() => {
+          setEntry("workspace");
+          setView("billing");
+        }}
+        onSignOut={() =>
+          perform(async () => {
+            const { error } = await browserClient().auth.signOut();
+            if (error) throw error;
+            setWorkspace(null);
+            setEntry("sales");
+            setSelectedPlan(null);
+          })
+        }
+      />
+    ) : null;
   if (loading)
     return (
       <div className="empty">
         <Brand />
-        <p>Opening your workspace…</p>
+        <p>Opening GeoFlow Lab…</p>
       </div>
     );
-  if (!preview && !workspace) return <Auth error={error} />;
+  if (!preview && !workspace && entry !== "sales")
+    return (
+      <Auth
+        error={error}
+        plan={selectedPlan}
+        onBack={() => setEntry("sales")}
+      />
+    );
+  if (!preview && !workspace?.canWrite && entry !== "workspace")
+    return (
+      <SalesPage
+        signedIn={!!workspace}
+        billingEnabled={!!workspace?.billingEnabled}
+        busy={busy}
+        error={error}
+        accountControls={accountControls}
+        onSignIn={() => {
+          setSelectedPlan(null);
+          setEntry("signin");
+        }}
+        onWorkspace={() => {
+          setEntry("workspace");
+          setView("overview");
+        }}
+        onChoosePlan={(interval) => {
+          setSelectedPlan(interval);
+          if (!workspace) {
+            setEntry("signin");
+            return;
+          }
+          if (workspace.billingEnabled) {
+            void billing(interval);
+            return;
+          }
+          setEntry("workspace");
+          setView("billing");
+          setNotice(
+            `You selected the ${interval === "year" ? "annual" : "monthly"} plan. Checkout is not open yet; you have not been charged.`,
+          );
+        }}
+      />
+    );
   return (
     <div className="app">
       <aside className="side">
@@ -383,7 +472,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
         <div className="side-foot">
           {preview ? (
             <a className="btn" href="/">
-              Sign in
+              View plans
             </a>
           ) : (
             <button
@@ -410,26 +499,33 @@ export default function App({ preview = false }: { preview?: boolean }) {
         )}
         <header className="top">
           <div className="crumb">
-            Your workspace /{" "}
             <strong>
               {view === "editor"
                 ? "Calculation"
                 : view === "results"
                   ? "Results"
-                  : "GeoFlow Lab"}
+                  : view === "catalog"
+                    ? "Calculators"
+                    : view === "billing"
+                      ? "Subscription"
+                      : "Overview"}
             </strong>
           </div>
-          <button
-            className="btn primary"
-            disabled={!editable || busy}
-            onClick={() => {
-              setChosen(catalog[0]?.id || "state-rent");
-              setModal(true);
-            }}
-          >
-            <Plus size={16} />
-            New calculation
-          </button>
+          <div className="top-actions">
+            <button
+              className="btn primary"
+              aria-label="New calculation"
+              disabled={!editable || busy}
+              onClick={() => {
+                setChosen(catalog[0]?.id || "state-rent");
+                setModal(true);
+              }}
+            >
+              <Plus size={16} />
+              <span className="new-calculation-label">New calculation</span>
+            </button>
+            {accountControls}
+          </div>
         </header>
         <div className="content">
           {error && (
@@ -772,8 +868,11 @@ export default function App({ preview = false }: { preview?: boolean }) {
               </p>
               {workspace?.subscription && (
                 <div className="notice">
-                  Status: {workspace.subscription.status}
-                  {workspace.subscription.paid_until
+                  {workspace.subscription.interval === "complimentary"
+                    ? "Complimentary access · No payment required"
+                    : `Status: ${workspace.subscription.status}`}
+                  {workspace.subscription.paid_until &&
+                  workspace.subscription.interval !== "complimentary"
                     ? " · Paid through " +
                       when(workspace.subscription.paid_until)
                     : ""}
@@ -785,6 +884,9 @@ export default function App({ preview = false }: { preview?: boolean }) {
               <div className="billing-grid">
                 {(["month", "year"] as const).map((interval) => (
                   <div className="card plan" key={interval}>
+                    {selectedPlan === interval && (
+                      <p className="eyebrow">Your selected plan</p>
+                    )}
                     <span className="tag">
                       {interval === "month" ? "Monthly" : "Annual"}
                     </span>
@@ -892,7 +994,120 @@ export default function App({ preview = false }: { preview?: boolean }) {
   );
 }
 
-function Auth({ error: outerError }: { error: string }) {
+function AccountControls({
+  user,
+  busy,
+  onSubscription,
+  onSignOut,
+}: {
+  user: Workspace["user"];
+  busy: boolean;
+  onSubscription: () => void;
+  onSignOut: () => void;
+}) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [photoFailed, setPhotoFailed] = useState(false);
+  const initials = (user.name || user.email)
+    .split(/[\s@]+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+  return (
+    <div className="account-controls">
+      <button
+        className="account-avatar-fallback"
+        aria-label={`Account: ${user.name || user.email}`}
+        onClick={() => dialog.current?.showModal()}
+      >
+        {user.avatarUrl && !photoFailed ? (
+          <img
+            className="account-avatar"
+            src={user.avatarUrl}
+            alt="Your profile"
+            referrerPolicy="no-referrer"
+            onError={() => setPhotoFailed(true)}
+          />
+        ) : (
+          initials
+        )}
+      </button>
+      <button
+        className="account-icon"
+        aria-label="Settings"
+        title="Settings"
+        onClick={() => dialog.current?.showModal()}
+      >
+        <Settings size={19} />
+      </button>
+      <button
+        className="account-icon"
+        aria-label="Sign out"
+        title="Sign out"
+        disabled={busy}
+        onClick={onSignOut}
+      >
+        <LogOut size={19} />
+      </button>
+      <dialog
+        ref={dialog}
+        className="modal account-settings"
+        aria-labelledby="account-settings-title"
+      >
+        <div className="row">
+          <h2 id="account-settings-title">Account settings</h2>
+          <button
+            className="btn ghost"
+            aria-label="Close settings"
+            onClick={() => dialog.current?.close()}
+          >
+            <X size={19} />
+          </button>
+        </div>
+        <p className="form-label">Name</p>
+        <p>{user.name || "Your account"}</p>
+        <p className="form-label">Email</p>
+        <p className="account-email">{user.email}</p>
+        <p className="subtitle">
+          Your profile photo and name come from your sign-in account. Your saved
+          calculations are private to this account.
+        </p>
+        <div className="modal-actions">
+          <button
+            className="btn primary"
+            onClick={() => {
+              dialog.current?.close();
+              onSubscription();
+            }}
+          >
+            Manage subscription
+          </button>
+          <button
+            className="btn"
+            disabled={busy}
+            onClick={() => {
+              dialog.current?.close();
+              onSignOut();
+            }}
+          >
+            Sign out
+          </button>
+        </div>
+      </dialog>
+    </div>
+  );
+}
+
+function Auth({
+  error: outerError,
+  plan,
+  onBack,
+}: {
+  error: string;
+  plan: "month" | "year" | null;
+  onBack: () => void;
+}) {
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("error"))
       setError(
@@ -908,18 +1123,25 @@ function Auth({ error: outerError }: { error: string }) {
     setError("");
     try {
       const auth = browserClient().auth;
+      const callback = new URL("/auth/callback", window.location.origin);
+      try {
+        if (plan) sessionStorage.setItem("geoflow-selected-plan", plan);
+        else sessionStorage.removeItem("geoflow-selected-plan");
+      } catch {
+        /* Sign-in still works when optional storage is unavailable. */
+      }
       const result =
         provider === "google"
           ? await auth.signInWithOAuth({
               provider: "google",
               options: {
-                redirectTo: window.location.origin + "/auth/callback",
+                redirectTo: callback.toString(),
               },
             })
           : await auth.signInWithOtp({
               email,
               options: {
-                emailRedirectTo: window.location.origin + "/auth/callback",
+                emailRedirectTo: callback.toString(),
               },
             });
       if (result.error) throw result.error;
@@ -935,12 +1157,24 @@ function Auth({ error: outerError }: { error: string }) {
     <main className="auth-page">
       <section className="auth-card card">
         <Brand />
+        <button className="btn ghost" onClick={onBack}>
+          <ArrowLeft size={15} /> Back to plans
+        </button>
         <div className="eyebrow">Project economics, made accessible</div>
         <h1 className="title">Welcome to your lab.</h1>
         <p className="subtitle">
           Create scenarios, compare outcomes, and keep your work in one private
           workspace.
         </p>
+        {plan && (
+          <p className="notice">
+            Selected:{" "}
+            {plan === "year"
+              ? "Annual · CAD $499.99/year"
+              : "Monthly · CAD $49.99/month"}
+            . Sign in to continue. You will not be charged by signing in.
+          </p>
+        )}
         {(error || outerError) && (
           <div role="alert" className="notice">
             {error || outerError}
