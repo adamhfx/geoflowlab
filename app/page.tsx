@@ -472,8 +472,8 @@ export default function App({ preview = false }: { preview?: boolean }) {
         </nav>
         <div className="side-foot">
           {preview ? (
-            <a className="btn" href="/">
-              View plans
+            <a className="sidebar-plans" href="/" aria-label="View plans">
+              <span>View plans</span><ArrowRight size={18} aria-hidden="true" />
             </a>
           ) : (
             <button
