@@ -85,13 +85,19 @@ function Brand() {
 
 export default function App({ preview = false }: { preview?: boolean }) {
   const [entry, setEntry] = useState<"sales" | "signin" | "workspace">("sales");
+  const [showPlans, setShowPlans] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<"month" | "year" | null>(
     null,
   );
   useEffect(() => {
+    if (entry === "sales" && window.location.hash === "#plans") return;
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [entry]);
   useEffect(() => {
+    if (window.location.hash === "#plans") {
+      setShowPlans(true);
+      return;
+    }
     const params = new URLSearchParams(window.location.search);
     let plan = params.get("plan");
     try {
@@ -412,7 +418,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
         onBack={() => setEntry("sales")}
       />
     );
-  if (!preview && !workspace?.canWrite && entry !== "workspace")
+  if (!preview && (!workspace?.canWrite || showPlans) && entry !== "workspace")
     return (
       <SalesPage
         signedIn={!!workspace}
@@ -472,7 +478,7 @@ export default function App({ preview = false }: { preview?: boolean }) {
         </nav>
         <div className="side-foot">
           {preview ? (
-            <a className="sidebar-plans" href="/" aria-label="View plans">
+            <a className="sidebar-plans" href="/#plans" aria-label="View plans">
               <span>View plans</span><ArrowRight size={18} aria-hidden="true" />
             </a>
           ) : (

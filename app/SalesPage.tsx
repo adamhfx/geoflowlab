@@ -12,7 +12,7 @@ import {
   Save,
   X,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 import "./sales.css";
 
@@ -75,6 +75,11 @@ export default function SalesPage({
   accountControls,
 }: SalesPageProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  useEffect(() => {
+    if (window.location.hash !== "#plans") return;
+    const frame = requestAnimationFrame(() => document.getElementById("plans")?.scrollIntoView({ block: "start" }));
+    return () => cancelAnimationFrame(frame);
+  }, []);
   const choose = (interval: "month" | "year") => {
     if (busy) return;
     onChoosePlan(interval);
