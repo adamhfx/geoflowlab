@@ -64,14 +64,14 @@ function Brand() {
     <div className="brand">
       <img
         className="logo-full"
-        src="/geoflow-lab-logo.svg"
+        src="/geoflow-lab-logo.png"
         alt="GeoFlow Lab"
-        width="1290"
+        width="1337"
         height="343"
       />
       <img
         className="logo-compact"
-        src="/geoflow-lab-icon.svg"
+        src="/geoflow-lab-logo.png"
         alt="GeoFlow Lab"
         width="343"
         height="343"

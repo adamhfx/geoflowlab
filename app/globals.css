@@ -819,6 +819,7 @@ select:focus-visible {
     width: 32px;
     height: 32px;
     max-width: none;
-    object-fit: contain;
+    object-fit: cover;
+    object-position: left;
   }
 }
