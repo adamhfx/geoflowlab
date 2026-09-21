@@ -982,8 +982,8 @@ export default function App({ preview = false }: { preview?: boolean }) {
                       {selectedPlan === interval && " · Selected"}
                     </span>
                     <div className="price">
-                      CAD {interval === "month" ? "$49.99" : "$499.99"}
-                      <span> / {interval}</span>
+                      {interval === "month" ? "$49.99" : "$499.99"}
+                      <span> / {interval} CAD</span>
                     </div>
                     <p className="subtitle">
                       {interval === "year" ? "Save CAD $99.89 a year compared with monthly billing." : "One account. Full calculator access."}

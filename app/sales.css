@@ -608,11 +608,11 @@
   justify-self: start;
   align-self: start;
 }
-.sales-plan-footnote {
+.sales-page .sales-plan-footnote {
   color: #7f948e;
   font-size: 10px;
   line-height: 1.45;
-  margin-top: 16px;
+  margin-top: 24px;
 }
 .sales-billing-notice {
   align-items: flex-start;
@@ -935,11 +935,9 @@
     width: 100%;
   }
 }
-.sales-saving-note {
-  border-bottom: 1px solid var(--line);
+.sales-page .sales-saving-note {
   color: #7b918b;
   font-size: 12px;
-  margin: 49px 0 29px;
-  padding-bottom: 16px;
+  margin: 24px 0 0;
 }
 

@@ -326,7 +326,7 @@ export default function SalesPage({
           <article className="sales-plan-card">
             <p className="sales-plan-label">Monthly</p>
             <h3>
-              <span>CAD</span>$49.99 <small>/ month</small>
+              $49.99 <small>/ month CAD</small>
             </h3>
             <p className="sales-plan-description">
               Flexible access while you make GeoFlow part of your process.
@@ -347,7 +347,7 @@ export default function SalesPage({
             <div className="plan-savings-header"><strong>Save 17%</strong><span>with annual billing</span></div>
             <p className="sales-plan-label">Yearly</p>
             <h3>
-              <span>CAD</span>$499.99 <small>/ year</small>
+              $499.99 <small>/ year CAD</small>
             </h3>
             <p className="sales-plan-description">
               The steady choice for a year of decisions, with CAD $99.89 saved
