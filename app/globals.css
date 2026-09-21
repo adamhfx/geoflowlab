@@ -668,6 +668,24 @@ button {
 .auth-card .brand {
   padding: 0 0 40px;
 }
+.auth-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+.auth-card .auth-header .brand {
+  padding: 0;
+  min-width: 0;
+  flex: 1;
+}
+.auth-header .btn {
+  flex-shrink: 0;
+  white-space: nowrap;
+  font-size: 13px;
+  padding: 10px 12px;
+}
 .auth-card .subtitle {
   line-height: 1.6;
 }

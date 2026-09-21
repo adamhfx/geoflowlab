@@ -1208,10 +1208,12 @@ function Auth({
   return (
     <main className="auth-page">
       <section className="auth-card card">
-        <Brand />
-        <button className="btn ghost" onClick={onBack}>
-          <ArrowLeft size={15} /> Back to plans
-        </button>
+        <div className="auth-header">
+          <Brand />
+          <button className="btn ghost" onClick={onBack}>
+            <ArrowLeft size={15} /> Back to plans
+          </button>
+        </div>
         <div className="eyebrow">Project economics, made accessible</div>
         <h1 className="title">Welcome to your lab.</h1>
         <p className="subtitle">
