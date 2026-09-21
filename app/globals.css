@@ -189,18 +189,18 @@ button {
   justify-content: center;
   flex-wrap: wrap;
   gap: 6px 10px;
-  min-height: 56px;
-  padding: 14px 18px;
+  min-height: 36px;
+  padding: 6px 16px;
   background: #126b61;
   color: #fff;
   border-bottom: 1px solid #0f5e55;
 }
-.plan-savings-header strong { font-size: 19px; font-weight: 700; }
+.plan-savings-header strong { font-size: 16px; font-weight: 700; }
 .plan-savings-header span { font-size: 13px; color: #e1f4ee; }
 .card.plan.plan-annual {
   position: relative;
   overflow: hidden;
-  padding-top: 84px;
+  padding-top: 52px;
   border-color: #78afa4;
 }
 .row {
