@@ -542,8 +542,17 @@
 }
 .sales-plan-grid {
   display: grid;
-  gap: 18px;
-  grid-template-columns: 1fr 1fr;
+  gap: 0 24px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 36px;
+}
+.sales-plan-grid .sales-plan-card {
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: span 5;
+  row-gap: 0;
+  padding-top: 54px;
+  box-shadow: none;
 }
 .sales-plan-card {
   border: 1px solid var(--line);
@@ -595,7 +604,9 @@
   max-width: 340px;
 }
 .sales-plan-card .sales-button {
-  margin-top: 22px;
+  margin-top: 36px;
+  justify-self: start;
+  align-self: start;
 }
 .sales-plan-footnote {
   color: #7f948e;
